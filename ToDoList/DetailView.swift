@@ -9,29 +9,57 @@ import SwiftUI
 
 struct DetailView: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var toDO = ""
+    @State private var reminderIsOn = false
+    @State private var dueDate = Date.now + (60*60*24)
+    @State private var notes = ""
+    @State private var isCompleted = false
     
     var passedValue: String
     
     var body: some View {
-        VStack{
-            Image(systemName: "swift")
-                .resizable()
-                .scaledToFit()
-                .foregroundColor(.orange)
+        
+        List {
+            TextField("Enter To Do here", text: $toDO)
+                .font(.title)
+                .textFieldStyle(.roundedBorder)
+                .padding()
+                .listRowSeparator(.hidden)
             
-            Text("You Are a Swifty Legend!\nAnd you passed over the value \(passedValue)")
-                .font(.largeTitle)
-                .multilineTextAlignment(.center)
+            Toggle("Set Reminder", isOn: $reminderIsOn)
+                .padding(.top)
+                .listRowSeparator(.hidden)
             
-            Spacer()
+            DatePicker("Date", selection: $dueDate)
+                .listRowSeparator(.hidden)
+                .padding(.bottom)
+                .disabled(!reminderIsOn)
             
-            Button("Get Back") {
-                dismiss()
-            }
-            .buttonStyle(.borderedProminent)
+            Text("Notes")
+                .padding(.top)
+            TextField("Notes", text: $notes, axis: .vertical)
+                .textFieldStyle(.roundedBorder)
+                .listRowSeparator(.hidden)
+            
+            Toggle("Completed", isOn: $isCompleted)
+                .padding(.top)
+                .listRowSeparator(.hidden)
         }
-        .padding()
+        .listStyle(.plain)
+        .toolbar {
+            ToolbarItem(placement:.navigationBarLeading) {
+                Button("Cancel") {
+                    dismiss()
+                }
+            }
+            ToolbarItem(placement:.navigationBarTrailing) {
+                Button("Save") {
+                    //Todo: Add save code here
+                }
+            }
+        }
         .navigationBarBackButtonHidden()
+        .navigationBarTitleDisplayMode(.automatic)
         
     }
 }
@@ -39,6 +67,8 @@ struct DetailView: View {
 
 struct DetailView_Previews: PreviewProvider {
     static var previews: some View {
-        DetailView(passedValue: "Item 1")
+        NavigationStack{
+            DetailView(passedValue: "Item 1")
+        }
     }
 }
