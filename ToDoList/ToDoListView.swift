@@ -16,14 +16,32 @@ struct ToDoListView: View {
         NavigationStack{
             List {
                 ForEach(toDosVM.toDos) { toDo in
-                    NavigationLink {
-                        DetailView(toDo: toDo)
-                    } label: {
-                        Text(toDo.item)
+                    HStack {
+                        Image(systemName: toDo.isCompleted ? "checkmark.rectangle"  : "rectangle")
+                            .onTapGesture {
+                                toDosVM.toggleCompleted(toDo: toDo)
+                            }
+                        
+                        NavigationLink {
+                            DetailView(toDo: toDo)
+                        } label: {
+                            Text(toDo.item)
+                        }
                     }
                     .font(.title2)
+                    
 
                 }
+                //Shorthand calls
+                .onDelete(perform: toDosVM.deleteToDo)
+                .onMove(perform: toDosVM.moveToDo)
+                //Traditional Calls are below
+//                .onDelete { indexSet in
+//                    toDosVM.delete(indexSet: indexSet)
+//                }
+//                .onMove { fromOffsets, toOffset in
+//                    toDosVM.toDos.move(fromOffsets: fromOffsets, toOffset: toOffset)
+//                }
 
             }
             .navigationTitle("To Do List")
@@ -39,10 +57,13 @@ struct ToDoListView: View {
 
 
                 }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    EditButton()
+                }
             }
             .sheet(isPresented: $sheetIsPresented) {
                 NavigationStack{
-                    DetailView(toDo: ToDo(), newToDo: true) // new value
+                    DetailView(toDo: ToDo()) // new value
                 }
             }
         }
